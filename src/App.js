@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Aikatauluservice from './services/aikataulut';
 import Aikataulut from './components/Aikataulut';
-import { set } from 'mongoose';
-
+import './App.css';
 
 const App = () => {
   const [saapuminen, setSaapuminen] = useState([]);
   const [pysakitB, setPysakitB] = useState([]);
   const [pysakitA, setPysakitA] = useState([]);
   const [AB, setAB] = useState('B');
-  const [stop, setStop] = useState('');
+  const [stopA, setStopA] = useState('');
+  const [stopB, setStopB] = useState('');
   const [selectedStop, setSelectedStop] = useState('');
 
   //Show it doesn't get confused to line 1
@@ -25,28 +24,26 @@ const App = () => {
       setPysakitA([]);
       setPysakitB([]);
       const responseB = await Aikatauluservice.getAllB();
-      console.log('onnistuiko pysakit B', responseB.body[0].stopPoints);
       const saapuvatB = responseB.body[0].stopPoints;
-      console.log('saapuvatB', saapuvatB);
       await saapuvatB.forEach((item, index) => {
         const name = item.name;
         const shortName = item.shortName;
         setPysakitB((pysakitB) => [...pysakitB, { name, shortName ,index}]);
       });
-      console.log('pysakitB', responseB.body[0].stopPoints[0].shortName);
-      setStop(responseB.body[0].stopPoints[0].shortName);
+      setStopB(responseB.body[0].stopPoints[0].shortName);
+      
 
 
       const responseA = await Aikatauluservice.getAllA();
-      console.log('onnistuiko pysakit A', responseA.body[0].stopPoints);
       const saapuvatA = responseA.body[0].stopPoints;
 
-      saapuvatA.forEach((item) => {
+      await saapuvatA.forEach((item, index) => {
         const name = item.name;
         const shortName = item.shortName;
-        setPysakitA((pysakitA) => [...pysakitA, { name, shortName }]);
+        setPysakitA((pysakitA) => [...pysakitA, { name, shortName, index }]);
       });
-      setStop(responseB.body[0].stopPoints[0].shortName);
+      setStopA(responseA.body[0].stopPoints[0].shortName);
+      
 
     } catch (error) {
       console.error('Error fetching pysakit', error);
@@ -55,82 +52,67 @@ const App = () => {
 
   useEffect(() => {
     getAikataulut();
-  }, [AB, pysakitA, pysakitB,stop]);
+  }, [AB,pysakitA, pysakitB, stopA, stopB]);
 
   const getAikataulut = async () => {
     setSaapuminen([]);
     setSaapuminen([]);
     try {
-      const direction = AB;
-      if (direction === 'A') {
-        console.log('suunta A', pysakitA);
-        
-        const responseStop = await Aikatauluservice.getStop(stop);
-        console.log('onnistuiko aikataulu', responseStop.body);
-        const saapuvat = responseStop.body;
+      if (AB === 'A') {
+        const responseStop = await Aikatauluservice.getStop(stopA);
+        const saapuvatFiltered = responseStop.body.filter((item) => item.lineUrl === lineURL);
+        const saapuvat=saapuvatFiltered;
         for(let i = 0; i < saapuvat.length; i++){
           for(let j = 0; j < saapuvat[i].calls.length; j++){
-            if(saapuvat[i].calls[j].stopPoint.shortName == stop && saapuvat[i].lineUrl == lineURL){
+            if(saapuvat[i].calls[j].stopPoint.shortName === stopA && saapuvat[i].lineUrl === lineURL){
               setSaapuminen((prevSaapuminen) => [...prevSaapuminen, saapuvat[i].calls[j].arrivalTime]);
             }
           }
         }
-        console.log('saapuminenA', saapuminen);
       } else {     
-        console.log('suunta B', pysakitB);
-        console.log('suunta B', stop);
-        const responseStop = await Aikatauluservice.getStop(stop);
-        console.log('onnistuiko aikataulu', responseStop.body);
-        const saapuvat = responseStop.body;
-        console.log('stop', stop)
+        const responseStop = await Aikatauluservice.getStop(stopB);
+        const saapuvatFiltered = responseStop.body.filter((item) => item.lineUrl === lineURL);
+        const saapuvat=saapuvatFiltered;
         for(let i = 0; i < saapuvat.length; i++){
           for(let j = 0; j < saapuvat[i].calls.length; j++){
-            if(saapuvat[i].calls[j].stopPoint.shortName == stop && saapuvat[i].lineUrl == lineURL){
+            if(saapuvat[i].calls[j].stopPoint.shortName === stopB && saapuvat[i].lineUrl === lineURL){
               setSaapuminen((prevSaapuminen) => [...prevSaapuminen, saapuvat[i].calls[j].arrivalTime]);
             }
           }
         }
-        console.log('saapuminenB', saapuminen);
         };
       }catch (error) {
       console.error('Error fetching aikataulut', error);
     } 
-    }
-
-  const handleChange = () => {
-    console.log('AB', AB);
-    setAB((AB) => (AB === 'A' ? 'B' : 'A'));
-    console.log('AB', AB);
-    setSaapuminen([]);
-  };
-
-  if (pysakitB.length === 0 ||saapuminen.length === 0 ) {
-    return <div>loading...</div>;
   }
 
+  const handleChange = async () => {
+    await setAB((AB) => (AB === 'A' ? 'B' : 'A'));
+  };
+
   const handleStopChange = (event) => {
-    console.log('event', event.target.value);
     setSelectedStop(event.target.value);
     if(AB === 'B'){
-      const stop = pysakitB.find((item) => item.name === event.target.value);
-      console.log('valittu pysäkki', stop);
-      const stopShortName = stop.shortName;
-      console.log('valittu pysäkki', stopShortName);
-      setStop(stopShortName);
+      const stopB = pysakitB.find((item) => item.name === event.target.value);
+      const stopShortName = stopB.shortName;
+      setStopB(stopShortName);
     }
     else{
-      const stop = pysakitA.find((item) => item.name === event.target.value);
-      console.log('valittu pysäkki', stop);
-      const stopShortName = stop.shortName;
-      console.log('valittu pysäkki', stopShortName);
-      setStop(stopShortName);
+      const stopA = pysakitA.find((item) => item.name === event.target.value);
+      const stopShortName = stopA.shortName;
+      setStopA(stopShortName);
     }
     
   }
+
+  if (pysakitB.length === 0 ||saapuminen.length === 0 ) {
+    return <div className='container'>loading...</div>;
+  }
+
   return (
-    <div>
+    <div className='container'>
       <div>
-        <button onClick={handleChange}>Vaihda A/B</button>
+        <button value={selectedStop} onClick={handleChange}>{AB === 'B' ? 'Vaihda Santalahteen' : ' Vaihda Hervantaan'}</button>
       </div>
       <div className='valinta'>
         <p>Valitse pysäkki</p>
@@ -152,15 +134,16 @@ const App = () => {
       </div>
       <div className='saapuvat'>
         <h2>SAAPUVAT</h2>
-        {
-          saapuminen.map((saapuminen,index) => (
-              <Aikataulut key={index}ajat={(saapuminen)}/>
-          ))
-        }
+        
         
       </div>
-      <div className='pysakit'>
+      <div className='aikataulut'>
         <h2>AIKATAULUT</h2>
+        {
+          saapuminen.map((saapuminen,index) => (
+              <Aikataulut key={index} ajat={saapuminen}/>
+          ))
+        }
       </div>
     </div>
   );
