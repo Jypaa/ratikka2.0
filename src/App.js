@@ -5,15 +5,19 @@ import './App.css';
 
 const App = () => {
   const [saapuminen, setSaapuminen] = useState([]);
-  const [pysakitB, setPysakitB] = useState([]);
-  const [pysakitA, setPysakitA] = useState([]);
-  const [AB, setAB] = useState('B');
-  const [stopA, setStopA] = useState('');
-  const [stopB, setStopB] = useState('');
-  const [selectedStop, setSelectedStop] = useState('');
+  const [pysakitB3, setPysakitB3] = useState([]);
+  const [pysakitA3, setPysakitA3] = useState([]);
+  const [pysakitB1, setPysakitB1] = useState([]);
+  const [pysakitA1, setPysakitA1] = useState([]);
+  const [AB3, setAB3] = useState('B');
+  const [AB1, setAB1] = useState('B');
+  const [stopA3, setStopA3] = useState('');
+  const [stopB3, setStopB3] = useState('');
+  const [stopA1, setStopA1] = useState('');
+  const [stopB1, setStopB1] = useState('');
+  const [oneOrThree, setOneOrThree ] = useState('3');
 
-  //Show it doesn't get confused to line 1
-  const lineURL = "https://data.itsfactory.fi/journeys/api/1/lines/3"
+  const [selectedStop, setSelectedStop] = useState('');
 
   useEffect(() => {
     getPysakit();
@@ -21,29 +25,46 @@ const App = () => {
 
   const getPysakit = async () => {
     try {
-      setPysakitA([]);
-      setPysakitB([]);
-      const responseB = await Aikatauluservice.getAllB();
-      const saapuvatB = responseB.body[0].stopPoints;
-      await saapuvatB.forEach((item, index) => {
+      setPysakitA3([]);
+      setPysakitB3([]);
+      setPysakitA1([]);
+      setPysakitB1([]);
+      const responseB3 = await Aikatauluservice.getAllB3();
+      const saapuvatB3 = responseB3.body[0].stopPoints;
+      await saapuvatB3.forEach((item, index) => {
         const name = item.name;
         const shortName = item.shortName;
-        setPysakitB((pysakitB) => [...pysakitB, { name, shortName ,index}]);
+        setPysakitB3((pysakitB3) => [...pysakitB3, { name, shortName ,index}]);
       });
-      setStopB(responseB.body[0].stopPoints[0].shortName);
-      
+      setStopB3(responseB3.body[0].stopPoints[0].shortName);
 
+      const responseA3 = await Aikatauluservice.getAllA3();
+      const saapuvatA3 = responseA3.body[0].stopPoints;
 
-      const responseA = await Aikatauluservice.getAllA();
-      const saapuvatA = responseA.body[0].stopPoints;
-
-      await saapuvatA.forEach((item, index) => {
+      await saapuvatA3.forEach((item, index) => {
         const name = item.name;
         const shortName = item.shortName;
-        setPysakitA((pysakitA) => [...pysakitA, { name, shortName, index }]);
+        setPysakitA3((pysakitA3) => [...pysakitA3, { name, shortName, index }]);
       });
-      setStopA(responseA.body[0].stopPoints[0].shortName);
+      setStopA3(responseA3.body[0].stopPoints[0].shortName);
       
+      const responseB1 = await Aikatauluservice.getAllB1();
+      const saapuvatB1 = responseB1.body[0].stopPoints;
+      await saapuvatB1.forEach((item, index) => {
+        const name = item.name;
+        const shortName = item.shortName;
+        setPysakitB1((pysakitB1) => [...pysakitB1, { name, shortName, index }]);
+      });
+      setStopB1(responseB1.body[0].stopPoints[0].shortName);
+
+      const responseA1 = await Aikatauluservice.getAllA1();
+      const saapuvatA1 = responseA1.body[0].stopPoints;
+      await saapuvatA1.forEach((item, index) => {
+        const name = item.name;
+        const shortName = item.shortName;
+        setPysakitA1((pysakitA1) => [...pysakitA1, { name, shortName, index }]);
+      });
+      setStopA1(responseA1.body[0].stopPoints[0].shortName);
 
     } catch (error) {
       console.error('Error fetching pysakit', error);
@@ -52,101 +73,187 @@ const App = () => {
 
   useEffect(() => {
     getAikataulut();
-  }, [AB,pysakitA, pysakitB, stopA, stopB]);
+  }, [AB3,pysakitA3, pysakitB3, stopA3, stopB3, oneOrThree, AB1, pysakitA1, pysakitB1, stopA1, stopB1]);
 
   const getAikataulut = async () => {
     setSaapuminen([]);
     setSaapuminen([]);
-    try {
-      if (AB === 'A') {
-        const responseStop = await Aikatauluservice.getStop(stopA);
-        const saapuvatFiltered = responseStop.body.filter((item) => item.lineUrl === lineURL);
-        const saapuvat=saapuvatFiltered;
+    if(oneOrThree === '3'){
+      if (AB3 === 'A') {
+        const responseStop = await Aikatauluservice.getStop(stopA3, oneOrThree);
+        const saapuvat=responseStop.body
         for(let i = 0; i < saapuvat.length; i++){
           for(let j = 0; j < saapuvat[i].calls.length; j++){
-            if(saapuvat[i].calls[j].stopPoint.shortName === stopA && saapuvat[i].lineUrl === lineURL){
+            if(saapuvat[i].calls[j].stopPoint.shortName === stopA3 ){
               setSaapuminen((prevSaapuminen) => [...prevSaapuminen, saapuvat[i].calls[j].arrivalTime]);
             }
           }
         }
-      } else {     
-        const responseStop = await Aikatauluservice.getStop(stopB);
-        const saapuvatFiltered = responseStop.body.filter((item) => item.lineUrl === lineURL);
-        const saapuvat=saapuvatFiltered;
+      }
+      if (AB3 === 'B') {
+        const responseStop = await Aikatauluservice.getStop(stopB3, oneOrThree);
+        const saapuvat=responseStop.body
         for(let i = 0; i < saapuvat.length; i++){
           for(let j = 0; j < saapuvat[i].calls.length; j++){
-            if(saapuvat[i].calls[j].stopPoint.shortName === stopB && saapuvat[i].lineUrl === lineURL){
+            if(saapuvat[i].calls[j].stopPoint.shortName === stopB3 ){
               setSaapuminen((prevSaapuminen) => [...prevSaapuminen, saapuvat[i].calls[j].arrivalTime]);
             }
           }
         }
-        };
-      }catch (error) {
-      console.error('Error fetching aikataulut', error);
-    } 
+      }
+    }
+    if(oneOrThree === '1'){
+      if (AB1 === 'A') {
+        const responseStop = await Aikatauluservice.getStop(stopA1, oneOrThree);
+        const saapuvat=responseStop.body
+        for(let i = 0; i < saapuvat.length; i++){
+          for(let j = 0; j < saapuvat[i].calls.length; j++){
+            if(saapuvat[i].calls[j].stopPoint.shortName === stopA1 ){
+              setSaapuminen((prevSaapuminen) => [...prevSaapuminen, saapuvat[i].calls[j].arrivalTime]);
+            }
+          }
+        }
+      }
+      if (AB1 === 'B') {
+        const responseStop = await Aikatauluservice.getStop(stopB1, oneOrThree);
+        const saapuvat=responseStop.body
+        for(let i = 0; i < saapuvat.length; i++){
+          for(let j = 0; j < saapuvat[i].calls.length; j++){
+            if(saapuvat[i].calls[j].stopPoint.shortName === stopB1 ){
+              setSaapuminen((prevSaapuminen) => [...prevSaapuminen, saapuvat[i].calls[j].arrivalTime]);
+            }
+          }
+        }
+      }
+    }
+  };
+  const handleLineChange = async () => {
+    await setOneOrThree((oneOrThree) => (oneOrThree === '1' ? '3' : '1'));
   }
 
   const handleChange = async () => {
-    await setAB((AB) => (AB === 'A' ? 'B' : 'A'));
+    if(oneOrThree === '3'){
+      await setAB3((AB3) => (AB3 === 'A' ? 'B' : 'A'));
+    }
+    else{
+      await setAB1((AB1) => (AB1 === 'A' ? 'B' : 'A'));
+    }
+
   };
 
   const handleStopChange = (event) => {
     setSelectedStop(event.target.value);
-    if(AB === 'B'){
-      const stopB = pysakitB.find((item) => item.name === event.target.value);
-      const stopShortName = stopB.shortName;
-      setStopB(stopShortName);
+    if(AB3 === 'B'){
+      const stopB3 = pysakitB3.find((item) => item.name === event.target.value);
+      const stopShortName = stopB3.shortName;
+      setStopB3(stopShortName);
     }
-    else{
-      const stopA = pysakitA.find((item) => item.name === event.target.value);
-      const stopShortName = stopA.shortName;
-      setStopA(stopShortName);
+    if(AB3 === 'A'){
+      const stopA3 = pysakitA3.find((item) => item.name === event.target.value);
+      const stopShortName = stopA3.shortName;
+      setStopA3(stopShortName);
+    }
+    if(AB1 === 'B'){
+      const stopB1 = pysakitB1.find((item) => item.name === event.target.value);
+      const stopShortName = stopB1.shortName;
+      setStopB1(stopShortName);
+    }
+    if(AB1 === 'A'){
+      const stopA1 = pysakitA1.find((item) => item.name === event.target.value);
+      const stopShortName = stopA1.shortName;
+      setStopA1(stopShortName);
     }
     
   }
 
-  if (pysakitB.length === 0 ||saapuminen.length === 0 ) {
+  if (pysakitB3.length === 0 ||saapuminen.length === 0 ) {
     return <div className='container'>loading...</div>;
   }
 
-  return (
-    <div className='container'>
-      <div>
-        <button value={selectedStop} onClick={handleChange}>{AB === 'B' ? 'Vaihda Santalahteen' : ' Vaihda Hervantaan'}</button>
-      </div>
-      <div className='valinta'>
+  if(oneOrThree === '1'){
+    return (
+      <div className='container'>
+        <div>
+          <button value={selectedStop} onClick={handleLineChange}>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</button>
+          <button value={selectedStop} onClick={handleChange}>{AB1 === 'B' ? 'Vaihda Taysiin' : 'Vaihda Sorin aukiolle'}</button>
+        </div>
+        <div className='tiedot'>
+          <p>Linjan {oneOrThree} aikataulut, suuntaan {AB1 === 'B' ? 'Tays' : 'Sorin Aukio'}</p>
+        </div>
+        <div className='valinta'>
         <p>Valitse pysäkki</p>
         <select value={selectedStop} onChange={handleStopChange}>
-          {AB === 'A' ? (
-            pysakitA.map((item, index) => (
-              <option key={index} value={item.name}>
-                {item.name}
-              </option>
+            {AB1 === 'A' ? (
+              pysakitA1.map((item, index) => (
+                <option key={index} value={item.name}>
+                  {item.name}
+                </option>
+              ))
+            ) : (
+             pysakitB1.map((item, index) => (
+                <option key={index} value={item.name}>
+                  {item.name}
+                </option>
+              ))
+            )}
+          </select>
+        </div>
+        <div className='saapuvat'>
+          <h2>SAAPUVAT</h2>     
+        </div>
+        <div className='aikataulut'>
+          <h2>AIKATAULUT</h2>
+          {
+            saapuminen.map((saapuminen,index) => (
+                <Aikataulut key={index} ajat={saapuminen}/>
             ))
-          ) : (
-            pysakitB.map((item, index) => (
-              <option key={index} value={item.name}>
-                {item.name}
-              </option>
+          }
+        </div>
+      </div>
+    );
+  }
+  if(oneOrThree === '3'){
+    return (
+      <div className='container'>
+        <div>
+          <button value={selectedStop} onClick={handleLineChange}>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</button>
+          <button value={selectedStop} onClick={handleChange}>{AB3 === 'B' ? 'Vaihda Santalahteen' : 'Vaihda Hervantaan'}</button>
+        </div>
+        <div className='tiedot'>
+          <p>Linjan {oneOrThree} aikataulut, suuntaan {AB3 === 'B' ? 'Santalahti' : 'Hervanta'}</p>
+        </div>
+        <div className='valinta'>
+        <p>Valitse pysäkki</p>
+        <select value={selectedStop} onChange={handleStopChange}>
+            {AB3 === 'A' ? (
+              pysakitA3.map((item, index) => (
+                <option key={index} value={item.name}>
+                  {item.name}
+                </option>
+              ))
+            ) : (
+             pysakitB3.map((item, index) => (
+                <option key={index} value={item.name}>
+                  {item.name}
+                </option>
+              ))
+            )}
+          </select>
+        </div>
+        <div className='saapuvat'>
+          <h2>SAAPUVAT</h2>     
+        </div>
+        <div className='aikataulut'>
+          <h2>AIKATAULUT</h2>
+          {
+            saapuminen.map((saapuminen,index) => (
+                <Aikataulut key={index} ajat={saapuminen}/>
             ))
-          )}
-        </select>
+          }
+        </div>
       </div>
-      <div className='saapuvat'>
-        <h2>SAAPUVAT</h2>
-        
-        
-      </div>
-      <div className='aikataulut'>
-        <h2>AIKATAULUT</h2>
-        {
-          saapuminen.map((saapuminen,index) => (
-              <Aikataulut key={index} ajat={saapuminen}/>
-          ))
-        }
-      </div>
-    </div>
-  );
+    );
+  }
 };
 
 export default App;
