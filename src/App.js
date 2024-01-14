@@ -143,22 +143,22 @@ const App = () => {
 
   const handleStopChange = (event) => {
     setSelectedStop(event.target.value);
-    if(AB3 === 'B'){
+    if(AB3 === 'B' && oneOrThree === '3'){
       const stopB3 = pysakitB3.find((item) => item.name === event.target.value);
       const stopShortName = stopB3.shortName;
       setStopB3(stopShortName);
     }
-    if(AB3 === 'A'){
+    if(AB3 === 'A' && oneOrThree === '3'){
       const stopA3 = pysakitA3.find((item) => item.name === event.target.value);
       const stopShortName = stopA3.shortName;
       setStopA3(stopShortName);
     }
-    if(AB1 === 'B'){
+    if(AB1 === 'B' && oneOrThree === '1'){
       const stopB1 = pysakitB1.find((item) => item.name === event.target.value);
       const stopShortName = stopB1.shortName;
       setStopB1(stopShortName);
     }
-    if(AB1 === 'A'){
+    if(AB1 === 'A' && oneOrThree === '1'){
       const stopA1 = pysakitA1.find((item) => item.name === event.target.value);
       const stopShortName = stopA1.shortName;
       setStopA1(stopShortName);
