@@ -73,6 +73,11 @@ const App = () => {
 
   useEffect(() => {
     getAikataulut();
+    const intervalId = setInterval(() => {
+      getAikataulut();
+    }, 5 * 60 * 1000); // 7 minutes in milliseconds
+
+    return () => clearInterval(intervalId);
   }, [AB3,pysakitA3, pysakitB3, stopA3, stopB3, oneOrThree, AB1, pysakitA1, pysakitB1, stopA1, stopB1]);
 
   const getAikataulut = async () => {
@@ -174,15 +179,15 @@ const App = () => {
     return (
       <div className='container'>
         <div>
-          <button value={selectedStop} onClick={handleLineChange}>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</button>
-          <button value={selectedStop} onClick={handleChange}>{AB1 === 'B' ? 'Vaihda Taysiin' : 'Vaihda Sorin aukiolle'}</button>
+          <button className='button' value={selectedStop} onClick={handleLineChange}><span>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</span></button>
+          <button className='button' value={selectedStop} onClick={handleChange}><span>{AB1 === 'B' ? 'Vaihda Taysiin' : 'Vaihda Sorin aukiolle'}</span></button>
         </div>
         <div className='tiedot'>
-          <p>Linjan {oneOrThree} aikataulut, suuntaan {AB1 === 'B' ? 'Tays' : 'Sorin Aukio'}</p>
+          <h5>Linjan {oneOrThree} aikataulut, suuntaan {AB1 === 'B' ? 'Tays' : 'Sorin Aukio'}</h5>
         </div>
         <div className='valinta'>
-        <p>Valitse pysäkki</p>
-        <select value={selectedStop} onChange={handleStopChange}>
+        <h3>Valitse pysäkki</h3>
+        <select className='selector' value={selectedStop} onChange={handleStopChange}>
             {AB1 === 'A' ? (
               pysakitA1.map((item, index) => (
                 <option key={index} value={item.name}>
@@ -197,9 +202,6 @@ const App = () => {
               ))
             )}
           </select>
-        </div>
-        <div className='saapuvat'>
-          <h2>SAAPUVAT</h2>     
         </div>
         <div className='aikataulut'>
           <h2>AIKATAULUT</h2>
@@ -216,15 +218,15 @@ const App = () => {
     return (
       <div className='container'>
         <div>
-          <button value={selectedStop} onClick={handleLineChange}>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</button>
-          <button value={selectedStop} onClick={handleChange}>{AB3 === 'B' ? 'Vaihda Santalahteen' : 'Vaihda Hervantaan'}</button>
+          <button className='button' value={selectedStop} onClick={handleLineChange}><span>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</span></button>
+          <button className='button' value={selectedStop} onClick={handleChange}><span>{AB3 === 'B' ? 'Vaihda Santalahteen' : 'Vaihda Hervantaan'}</span></button>
         </div>
         <div className='tiedot'>
-          <p>Linjan {oneOrThree} aikataulut, suuntaan {AB3 === 'B' ? 'Santalahti' : 'Hervanta'}</p>
+          <h5>Linjan {oneOrThree} aikataulut, suuntaan {AB3 === 'B' ? 'Santalahti' : 'Hervanta'}</h5>
         </div>
         <div className='valinta'>
-        <p>Valitse pysäkki</p>
-        <select value={selectedStop} onChange={handleStopChange}>
+        <h3>Valitse pysäkki</h3>
+        <select className='selector' value={selectedStop} onChange={handleStopChange}>
             {AB3 === 'A' ? (
               pysakitA3.map((item, index) => (
                 <option key={index} value={item.name}>
@@ -239,9 +241,6 @@ const App = () => {
               ))
             )}
           </select>
-        </div>
-        <div className='saapuvat'>
-          <h2>SAAPUVAT</h2>     
         </div>
         <div className='aikataulut'>
           <h2>AIKATAULUT</h2>
