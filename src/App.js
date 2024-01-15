@@ -30,14 +30,13 @@ const App = () => {
       setPysakitA1([]);
       setPysakitB1([]);
       const responseB3 = await Aikatauluservice.getAllB3();
-      const saapuvatB3 = responseB3.body[0].stopPoints;
+      const saapuvatB3 = responseB3.body[1].stopPoints;
       await saapuvatB3.forEach((item, index) => {
         const name = item.name;
         const shortName = item.shortName;
         setPysakitB3((pysakitB3) => [...pysakitB3, { name, shortName ,index}]);
       });
-      setStopB3(responseB3.body[0].stopPoints[0].shortName);
-
+      setStopB3(responseB3.body[1].stopPoints[0].shortName);
       const responseA3 = await Aikatauluservice.getAllA3();
       const saapuvatA3 = responseA3.body[0].stopPoints;
 
@@ -49,13 +48,13 @@ const App = () => {
       setStopA3(responseA3.body[0].stopPoints[0].shortName);
       
       const responseB1 = await Aikatauluservice.getAllB1();
-      const saapuvatB1 = responseB1.body[0].stopPoints;
+      const saapuvatB1 = responseB1.body[1].stopPoints;
       await saapuvatB1.forEach((item, index) => {
         const name = item.name;
         const shortName = item.shortName;
         setPysakitB1((pysakitB1) => [...pysakitB1, { name, shortName, index }]);
       });
-      setStopB1(responseB1.body[0].stopPoints[0].shortName);
+      setStopB1(responseB1.body[1].stopPoints[0].shortName);
 
       const responseA1 = await Aikatauluservice.getAllA1();
       const saapuvatA1 = responseA1.body[0].stopPoints;
@@ -171,14 +170,14 @@ const App = () => {
     
   }
 
-  if (pysakitB3.length === 0 ||saapuminen.length === 0 ) {
+  if (saapuminen.length === 0 && pysakitA3.length === 0 && pysakitB3.length === 0 || saapuminen=== 0 && pysakitA1.length === 0 && pysakitB1.length === 0 ) {
     return <div className='container'>loading...</div>;
   }
 
   if(oneOrThree === '1'){
     return (
       <div className='container'>
-        <div>
+        <div className='buttons'>
           <button className='button' value={selectedStop} onClick={handleLineChange}><span>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</span></button>
           <button className='button' value={selectedStop} onClick={handleChange}><span>{AB1 === 'B' ? 'Vaihda Taysiin' : 'Vaihda Sorin aukiolle'}</span></button>
         </div>
@@ -217,7 +216,7 @@ const App = () => {
   if(oneOrThree === '3'){
     return (
       <div className='container'>
-        <div>
+        <div className='buttons'>
           <button className='button' value={selectedStop} onClick={handleLineChange}><span>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</span></button>
           <button className='button' value={selectedStop} onClick={handleChange}><span>{AB3 === 'B' ? 'Vaihda Santalahteen' : 'Vaihda Hervantaan'}</span></button>
         </div>

@@ -4,27 +4,23 @@ const date = new Date();
 const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday",];
 let day = date.getDay()
 
-
-const urlStopNamesB3 = 'https://data.itsfactory.fi/journeys/api/1/journey-patterns/735'
-const urlStopNamesA3 = 'https://data.itsfactory.fi/journeys/api/1/journey-patterns/760'
-const urlStopNamesB1 = 'https://data.itsfactory.fi/journeys/api/1/journey-patterns/895'
-const urlStopNamesA1 = 'https://data.itsfactory.fi/journeys/api/1/journey-patterns/906'
-
+const urlStopNames3 = 'https://data.itsfactory.fi/journeys/api/1/journey-patterns?lineId=3'
+const urlStopNames1 = 'https://data.itsfactory.fi/journeys/api/1/journey-patterns?lineId=1'
 
 const getAllB3 =  () => {
-    const request = axios.get(urlStopNamesB3)
+    const request = axios.get(urlStopNames3)
     return request.then(response => response.data);
 }
 const getAllA3 =  () => {
-    const request = axios.get(urlStopNamesA3)
+    const request = axios.get(urlStopNames3)
     return request.then(response => response.data);
 }
 const getAllB1 =  () => {
-    const request = axios.get(urlStopNamesB1)
+    const request = axios.get(urlStopNames1)
     return request.then(response => response.data);
 }
 const getAllA1 =  () => {
-    const request = axios.get(urlStopNamesA1)
+    const request = axios.get(urlStopNames1)
     return request.then(response => response.data);
 }
 
@@ -53,7 +49,7 @@ const getStop = (stopId, oneOrThree) =>{
             }
         }  
     }
-    if(oneOrThree==='1'){
+    if(oneOrThree ==='1'){
         if(day === 0){
             const request = axios.get(`https://data.itsfactory.fi/journeys/api/1/journeys?startIndex=0&stopPointId=${stopname}&dayTypes=${days[day]}&lineId=1`)
             return request.then(response =>response.data)  

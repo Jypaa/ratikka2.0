@@ -2,6 +2,7 @@
   text-align: center;
 }
 
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -128,4 +129,54 @@
 
 .linja {
   margin: 10px;
+}
+
+@media screen and (max-width: 800px) {
+  .App {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .App-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  .App-logo {
+    height: 20vmin;
+  }
+  .App-link {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  .button {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    text-wrap: nowrap;
+    
+  }
+
+  .selector {
+    width: 200px;
+  }
+  .valinta {
+    margin-top: 0px;
+  }
+  .aikataulut {
+    width: 100%;
+  }
+  .pysakki {
+    margin: 0px;
+  }
+  .suunta {
+    margin: 0px;
+  }
+  .linja {
+    margin: 0px;
+  }
+  
 }
