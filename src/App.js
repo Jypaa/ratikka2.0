@@ -16,6 +16,7 @@ const App = () => {
   const [stopA1, setStopA1] = useState('');
   const [stopB1, setStopB1] = useState('');
   const [oneOrThree, setOneOrThree ] = useState('3');
+  const [tila, setTila] = useState('');
 
   const [selectedStop, setSelectedStop] = useState('');
 
@@ -74,7 +75,8 @@ const App = () => {
     getAikataulut();
     const intervalId = setInterval(() => {
       getAikataulut();
-    }, 5 * 60 * 1000); // 7 minutes in milliseconds
+      setTila('');
+    }, 5 * 60 * 1000); // 5 minutes in milliseconds
 
     return () => clearInterval(intervalId);
   }, [AB3,pysakitA3, pysakitB3, stopA3, stopB3, oneOrThree, AB1, pysakitA1, pysakitB1, stopA1, stopB1]);
@@ -82,9 +84,15 @@ const App = () => {
   const getAikataulut = async () => {
     setSaapuminen([]);
     setSaapuminen([]);
+    try{
     if(oneOrThree === '3'){
       if (AB3 === 'A') {
         const responseStop = await Aikatauluservice.getStop(stopA3, oneOrThree);
+        if(responseStop.status === "error"){
+          return(
+            setTila('error')
+          )
+        }
         const saapuvat=responseStop.body
         for(let i = 0; i < saapuvat.length; i++){
           for(let j = 0; j < saapuvat[i].calls.length; j++){
@@ -96,6 +104,11 @@ const App = () => {
       }
       if (AB3 === 'B') {
         const responseStop = await Aikatauluservice.getStop(stopB3, oneOrThree);
+        if(responseStop.status === "error"){
+          return(
+            setTila('error')
+          )
+        }
         const saapuvat=responseStop.body
         for(let i = 0; i < saapuvat.length; i++){
           for(let j = 0; j < saapuvat[i].calls.length; j++){
@@ -109,6 +122,11 @@ const App = () => {
     if(oneOrThree === '1'){
       if (AB1 === 'A') {
         const responseStop = await Aikatauluservice.getStop(stopA1, oneOrThree);
+        if(responseStop.status === "error"){
+          return(
+            setTila('error')
+          )
+        }
         const saapuvat=responseStop.body
         for(let i = 0; i < saapuvat.length; i++){
           for(let j = 0; j < saapuvat[i].calls.length; j++){
@@ -120,6 +138,11 @@ const App = () => {
       }
       if (AB1 === 'B') {
         const responseStop = await Aikatauluservice.getStop(stopB1, oneOrThree);
+        if(responseStop.status === "error"){
+          return(
+            setTila('error')
+          )
+        }
         const saapuvat=responseStop.body
         for(let i = 0; i < saapuvat.length; i++){
           for(let j = 0; j < saapuvat[i].calls.length; j++){
@@ -130,7 +153,10 @@ const App = () => {
         }
       }
     }
+  }catch(error){
+    console.error('Error fetching aikataulut', error);
   };
+}
   const handleLineChange = async () => {
     await setOneOrThree((oneOrThree) => (oneOrThree === '1' ? '3' : '1'));
   }
@@ -170,8 +196,15 @@ const App = () => {
     
   }
 
-  if (saapuminen.length === 0 && pysakitA3.length === 0 && pysakitB3.length === 0 || saapuminen=== 0 && pysakitA1.length === 0 && pysakitB1.length === 0 ) {
-    return <div className='container'>loading...</div>;
+
+  if ((saapuminen.length === 0 && pysakitA3.length === 0 && pysakitB3.length === 0) || (saapuminen=== 0 && pysakitA1.length === 0 && pysakitB1.length === 0) ) {
+    if(tila === 'error'){
+      return <div className='container'>ERROR fetching data, please come back later</div>;
+    }
+    else{
+      return <div className='container'>loading...</div>;
+    }
+    
   }
 
   if(oneOrThree === '1'){
