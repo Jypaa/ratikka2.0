@@ -237,7 +237,7 @@ const App = () => {
           <button className='button' value={selectedStop} onClick={handleChange}><span>{AB1 === 'B' ? 'Vaihda Taysiin' : 'Vaihda Sorin aukiolle'}</span></button>
         </div>
         <div className='tiedot'>
-          <h5>Linjan {oneOrThree} aikataulut, suuntaan {AB1 === 'A' ? 'Tays' : 'Sorin Aukio'}</h5>
+          <h5>Linjan {oneOrThree} aikataulut, suuntaan {AB1 === 'A' ? 'Sorin Aukio' : 'Tays'}</h5>
         </div>
         <div className='valinta'>
         <h3>Valitse pysäkki</h3>
