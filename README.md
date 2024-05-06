@@ -2,4 +2,4 @@
 
 https://ratikka.onrender.com/
 
-loadig might take sometime due server
+Loading might take some time due server
