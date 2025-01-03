@@ -33,13 +33,14 @@ const App = () => {
       setPysakitB1([]);
 
       const responseB3 = await Aikatauluservice.getAllB3();
-      const saapuvatB3 = responseB3.body[0].stopPoints;
+      const saapuvatB3 = responseB3.body[5].stopPoints;
       await saapuvatB3.forEach((item, index) => {
         const name = item.name;
         const shortName = item.shortName;
         setPysakitB3((pysakitB3) => [...pysakitB3, { name, shortName ,index}]);
       });
-      setStopB3(responseB3.body[0].stopPoints[0].shortName);
+      console.log('responseB3',responseB3)
+      setStopB3(responseB3.body[5].stopPoints[0].shortName);
       console.log('pysakitA3',pysakitB3)
       console.log('stopA3',stopB3)
 
@@ -51,6 +52,7 @@ const App = () => {
         setPysakitA3((pysakitA3) => [...pysakitA3, { name, shortName, index }]);
       });
       setStopA3(responseA3.body[4].stopPoints[0].shortName);
+      console.log('responseA3',responseA3)
       console.log('pysakitB3',pysakitA3)
       console.log('stopB3',stopA3)
 
@@ -62,17 +64,19 @@ const App = () => {
         setPysakitB1((pysakitB1) => [...pysakitB1, { name, shortName, index }]);
       });
       setStopB1(responseB1.body[2].stopPoints[0].shortName);
+      console.log('responseB1',responseB1)
       console.log('pysakitB1',pysakitB1)
       console.log('stopB1',stopB1)
 
       const responseA1 = await Aikatauluservice.getAllA1();
-      const saapuvatA1 = responseA1.body[1].stopPoints;
+      const saapuvatA1 = responseA1.body[3].stopPoints;
       await saapuvatA1.forEach((item, index) => {
         const name = item.name;
         const shortName = item.shortName;
         setPysakitA1((pysakitA1) => [...pysakitA1, { name, shortName, index }]);     
       });
-      setStopA1(responseA1.body[1].stopPoints[0].shortName);
+      setStopA1(responseA1.body[3].stopPoints[0].shortName);
+      console.log('responseA1',responseA1)
       console.log('pysakitA1',pysakitA1)
       console.log('stopA1',stopA1)
 
@@ -119,6 +123,7 @@ const App = () => {
       if (AB3 === 'B') {
         console.log('stopB3', stopB3)
         const responseStop = await Aikatauluservice.getStop(stopB3, oneOrThree);
+        console.log('responseStop',responseStop)
         if(responseStop.status === "error"){
           return(
             setTila('error')
@@ -234,10 +239,10 @@ const App = () => {
       <div className='container'>
         <div className='buttons'>
           <button className='button' value={selectedStop} onClick={handleLineChange}><span>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</span></button>
-          <button className='button' value={selectedStop} onClick={handleChange}><span>{AB1 === 'B' ? 'Vaihda Taysiin' : 'Vaihda Sorin aukiolle'}</span></button>
+          <button className='button' value={selectedStop} onClick={handleChange}><span>{AB1 === 'B' ? 'Vaihda Taysiin' : 'Vaihda Santalahteen'}</span></button>
         </div>
         <div className='tiedot'>
-          <h5>Linjan {oneOrThree} aikataulut, suuntaan {AB1 === 'A' ? 'Sorin Aukio' : 'Tays'}</h5>
+          <h5>Linjan {oneOrThree} aikataulut, suuntaan {AB1 === 'A' ? 'Santalahti' : 'Tays'}</h5>
         </div>
         <div className='valinta'>
         <h3>Valitse pysäkki</h3>
@@ -274,10 +279,10 @@ const App = () => {
       <div className='container'>
         <div className='buttons'>
           <button className='button' value={selectedStop} onClick={handleLineChange}><span>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</span></button>
-          <button className='button' value={selectedStop} onClick={handleChange}><span>{AB3 === 'B' ? 'Vaihda Hervantaan' : 'Vaihda Santalahteen'}</span></button>
+          <button className='button' value={selectedStop} onClick={handleChange}><span>{AB3 === 'B' ? 'Vaihda Hervantaan' : 'Vaihda Sorin aukiolle'}</span></button>
         </div>
         <div className='tiedot'>
-          <h5>Linjan {oneOrThree} aikataulut, suuntaan {AB3 === 'A' ? 'Santalahti' : 'Hervanta'}</h5>
+          <h5>Linjan {oneOrThree} aikataulut, suuntaan {AB3 === 'A' ? 'Sorin Aukio' : 'Hervanta'}</h5>
         </div>
         <div className='valinta'>
         <h3>Valitse pysäkki</h3>
