@@ -33,25 +33,25 @@ const App = () => {
       setPysakitB1([]);
 
       const responseB3 = await Aikatauluservice.getAllB3();
-      const saapuvatB3 = responseB3.body[5].stopPoints;
+      const saapuvatB3 = responseB3.body[3].stopPoints;
       await saapuvatB3.forEach((item, index) => {
         const name = item.name;
         const shortName = item.shortName;
         setPysakitB3((pysakitB3) => [...pysakitB3, { name, shortName ,index}]);
       });
       console.log('responseB3',responseB3)
-      setStopB3(responseB3.body[5].stopPoints[0].shortName);
+      setStopB3(responseB3.body[3].stopPoints[0].shortName);
       console.log('pysakitA3',pysakitB3)
       console.log('stopA3',stopB3)
 
       const responseA3 = await Aikatauluservice.getAllA3();
-      const saapuvatA3 = responseA3.body[4].stopPoints;
+      const saapuvatA3 = responseA3.body[2].stopPoints;
       await saapuvatA3.forEach((item, index) => {
         const name = item.name;
         const shortName = item.shortName;
         setPysakitA3((pysakitA3) => [...pysakitA3, { name, shortName, index }]);
       });
-      setStopA3(responseA3.body[4].stopPoints[0].shortName);
+      setStopA3(responseA3.body[2].stopPoints[0].shortName);
       console.log('responseA3',responseA3)
       console.log('pysakitB3',pysakitA3)
       console.log('stopB3',stopA3)
