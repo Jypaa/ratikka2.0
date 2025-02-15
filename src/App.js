@@ -31,55 +31,35 @@ const App = () => {
       setPysakitB3([]);
       setPysakitA1([]);
       setPysakitB1([]);
-
-      const responseB3 = await Aikatauluservice.getAllB3();
+  
+      const [responseB3, responseA3, responseB1, responseA1] = await Promise.all([
+        Aikatauluservice.getAllB3(),
+        Aikatauluservice.getAllA3(),
+        Aikatauluservice.getAllB1(),
+        Aikatauluservice.getAllA1()
+      ]);
+  
       const saapuvatB3 = responseB3.body[3].stopPoints;
-      await saapuvatB3.forEach((item, index) => {
-        const name = item.name;
-        const shortName = item.shortName;
-        setPysakitB3((pysakitB3) => [...pysakitB3, { name, shortName ,index}]);
-      });
-      console.log('responseB3',responseB3)
-      setStopB3(responseB3.body[3].stopPoints[0].shortName);
-      console.log('pysakitA3',pysakitB3)
-      console.log('stopA3',stopB3)
-
-      const responseA3 = await Aikatauluservice.getAllA3();
       const saapuvatA3 = responseA3.body[2].stopPoints;
-      await saapuvatA3.forEach((item, index) => {
-        const name = item.name;
-        const shortName = item.shortName;
-        setPysakitA3((pysakitA3) => [...pysakitA3, { name, shortName, index }]);
-      });
-      setStopA3(responseA3.body[2].stopPoints[0].shortName);
-      console.log('responseA3',responseA3)
-      console.log('pysakitB3',pysakitA3)
-      console.log('stopB3',stopA3)
-
-      const responseB1 = await Aikatauluservice.getAllB1();
       const saapuvatB1 = responseB1.body[2].stopPoints;
-      await saapuvatB1.forEach((item, index) => {
-        const name = item.name;
-        const shortName = item.shortName;
-        setPysakitB1((pysakitB1) => [...pysakitB1, { name, shortName, index }]);
-      });
-      setStopB1(responseB1.body[2].stopPoints[0].shortName);
-      console.log('responseB1',responseB1)
-      console.log('pysakitB1',pysakitB1)
-      console.log('stopB1',stopB1)
-
-      const responseA1 = await Aikatauluservice.getAllA1();
       const saapuvatA1 = responseA1.body[3].stopPoints;
-      await saapuvatA1.forEach((item, index) => {
-        const name = item.name;
-        const shortName = item.shortName;
-        setPysakitA1((pysakitA1) => [...pysakitA1, { name, shortName, index }]);     
-      });
-      setStopA1(responseA1.body[3].stopPoints[0].shortName);
-      console.log('responseA1',responseA1)
-      console.log('pysakitA1',pysakitA1)
-      console.log('stopA1',stopA1)
-
+  
+      setPysakitB3(saapuvatB3.map((item, index) => ({ name: item.name, shortName: item.shortName, index })));
+      setStopB3(saapuvatB3[0].shortName);
+  
+      setPysakitA3(saapuvatA3.map((item, index) => ({ name: item.name, shortName: item.shortName, index })));
+      setStopA3(saapuvatA3[0].shortName);
+  
+      setPysakitB1(saapuvatB1.map((item, index) => ({ name: item.name, shortName: item.shortName, index })));
+      setStopB1(saapuvatB1[0].shortName);
+  
+      setPysakitA1(saapuvatA1.map((item, index) => ({ name: item.name, shortName: item.shortName, index })));
+      setStopA1(saapuvatA1[0].shortName);
+  
+      console.log('responseB3', responseB3);
+      console.log('responseA3', responseA3);
+      console.log('responseB1', responseB1);
+      console.log('responseA1', responseA1);
     } catch (error) {
       console.error('Error fetching pysakit', error);
     }

@@ -4,8 +4,8 @@ const date = new Date();
 const days = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday",];
 let day = date.getDay()
 
-const urlStopNames3 = 'https://data.itsfactory.fi/journeys/api/1/journey-patterns?lineId=3'
-const urlStopNames1 = 'https://data.itsfactory.fi/journeys/api/1/journey-patterns?lineId=1'
+const urlStopNames3 = '/journeys/api/1/journey-patterns?lineId=3'
+const urlStopNames1 = '/journeys/api/1/journey-patterns?lineId=1'
 
 const getAllB3 =  () => {
     const request = axios.get(urlStopNames3)
@@ -28,14 +28,14 @@ const getStop = (stopId, oneOrThree) =>{
     const stopname = stopId
 
     if(oneOrThree === '3'){  
-        const request = axios.get(`https://data.itsfactory.fi/journeys/api/1/journeys?stopPointId=${stopname}&dayTypes=${days[day]}&lineId=3`)
+        const request = axios.get(`/journeys/api/1/journeys?stopPointId=${stopname}&dayTypes=${days[day]}&lineId=3`)
         console.log('request',stopname, days[day])
         return request.then(response =>response.data)
         }
          
     
     if(oneOrThree ==='1'){
-        const request = axios.get(`https://data.itsfactory.fi/journeys/api/1/journeys?stopPointId=${stopname}&dayTypes=${days[day]}&lineId=1`)
+        const request = axios.get(`/journeys/api/1/journeys?stopPointId=${stopname}&dayTypes=${days[day]}&lineId=1`)
         return request.then(response =>response.data)
                
     }
