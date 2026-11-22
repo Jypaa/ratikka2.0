@@ -1,4 +1,4 @@
-name: Production Build & Verify No Logs
+name: React Production Build (No Logs)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  build-and-verify:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,17 +23,22 @@ jobs:
       - name: Asenna riippuvuudet
         run: npm ci
 
-      - name: Rakenna tuotantobuildi ilman lokeja ja source mapeja
+      - name: Rakenna React-tuotantobuildi ilman source mapeja
         env:
-          NODE_ENV: production
           GENERATE_SOURCEMAP: false
         run: npm run build
 
-      - name: Varmista ettei bundle sisällä console.log-kutsuja
+      - name: Poista kaikki console-kutsut tuotantobundlesta
         run: |
-          BUILD_DIR="build" # Vaihda muotoon "dist" jos käytät Viteä
-          if grep -rnE "console\.(log|debug|info)\(" "$BUILD_DIR"; then
-            echo "VIRHE: Tuotantobundlesta löytyi lokikutsuja!"
+          npm install -g terser
+          while IFS= read -r file; do
+            terser "$file" --compress "pure_funcs=['console.log','console.info','console.debug']" -o "${file}.tmp"
+          done < <(find build -name "*.js" -type f)
+
+      - name: Varmista ettei lokikutsuja jäänyt
+        run: |
+          if grep -rnE "console\.(log|debug|info|)\(" build/; then
+            echo "VIRHE: Tuotantobundlesta löytyi console-kutsuja!"
             exit 1
           fi
-          echo "OK: Lokikutsuja ei löytynyt tuotantobundlesta."
+          echo "OK: Kaikki lokikutsut on poistettu."

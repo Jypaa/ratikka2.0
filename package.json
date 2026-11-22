@@ -17,12 +17,12 @@
   },
   "scripts": {
     "dev": "react-scripts start",
-    "start": "craco start",
+    "start": "serve -s build",
     "start:dev": "serve -s build-dev",
-    "build": "craco build",
+    "build": "react-scripts build",
     "build:dev": "BUILD_PATH=build-dev react-scripts build",
     "build:prod": "react-scripts build",
-    "test": "craco test",
+    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
