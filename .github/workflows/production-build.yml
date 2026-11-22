@@ -37,7 +37,7 @@ jobs:
 
       - name: Varmista ettei lokikutsuja jäänyt
         run: |
-          if grep -rnE "console\.(log|debug|info|)\(" build/; then
+          if grep -rnE "console\.(log|debug|info)\(" build/; then
             echo "VIRHE: Tuotantobundlesta löytyi console-kutsuja!"
             exit 1
           fi
