@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Aikatauluservice from './services/aikataulut';
 import Aikataulut from './components/Aikataulut';
+import { logger } from './utils/logger';
 import './App.css';
 
 const App = () => {
@@ -49,6 +50,8 @@ const App = () => {
   
       setPysakitA3(saapuvatA3.map((item, index) => ({ name: item.name, shortName: item.shortName, index })));
       setStopA3(saapuvatA3[0].shortName);
+      setSelectedStop(saapuvatA3[0].name);
+
   
       setPysakitB1(saapuvatB1.map((item, index) => ({ name: item.name, shortName: item.shortName, index })));
       setStopB1(saapuvatB1[0].shortName);
@@ -56,12 +59,12 @@ const App = () => {
       setPysakitA1(saapuvatA1.map((item, index) => ({ name: item.name, shortName: item.shortName, index })));
       setStopA1(saapuvatA1[0].shortName);
   
-      console.log('responseB3', responseB3);
-      console.log('responseA3', responseA3);
-      console.log('responseB1', responseB1);
-      console.log('responseA1', responseA1);
+      logger.log('responseB3', responseB3);
+      logger.log('responseA3', responseA3);
+      logger.log('responseB1', responseB1);
+      logger.log('responseA1', responseA1);
     } catch (error) {
-      console.error('Error fetching pysakit', error);
+      logger.error('Error fetching pysakit', error);
     }
   };
 
@@ -82,7 +85,7 @@ const App = () => {
 
     try{
     if(oneOrThree === '3'){
-      console.log('AB3', AB3)
+      logger.log('AB3', AB3)
       if (AB3 === 'A') {
         const responseStop = await Aikatauluservice.getStop(stopA3, oneOrThree);
         if(responseStop.status === "error"){
@@ -101,9 +104,9 @@ const App = () => {
         }
       }
       if (AB3 === 'B') {
-        console.log('stopB3', stopB3)
+        logger.log('stopB3', stopB3)
         const responseStop = await Aikatauluservice.getStop(stopB3, oneOrThree);
-        console.log('responseStop',responseStop)
+        logger.log('responseStop',responseStop)
         if(responseStop.status === "error"){
           return(
             setTila('error')
@@ -122,7 +125,7 @@ const App = () => {
 
 
     if(oneOrThree === '1'){
-      console.log('AB1', AB1)
+      logger.log('AB1', AB1)
       if (AB1 === 'A') {
         const responseStop = await Aikatauluservice.getStop(stopA1, oneOrThree);
         if(responseStop.status === "error"){
@@ -161,19 +164,53 @@ const App = () => {
 
 
   }catch(error){
-    console.error('Error fetching aikataulut', error);
+    logger.error('Error fetching aikataulut', error);
   };
 }
   const handleLineChange = async () => {
-    await setOneOrThree((oneOrThree) => (oneOrThree === '1' ? '3' : '1'));
+    await setOneOrThree((currentLine) => {
+      const nextLine = currentLine === '1' ? '3' : '1';
+      const nextStops = nextLine === '3'
+        ? (AB3 === 'A' ? pysakitA3 : pysakitB3)
+        : (AB1 === 'A' ? pysakitA1 : pysakitB1);
+      if (nextStops.length > 0) {
+        setSelectedStop(nextStops[0].name);
+        if (nextLine === '3') {
+          if (AB3 === 'A') setStopA3(nextStops[0].shortName);
+          else setStopB3(nextStops[0].shortName);
+        } else {
+          if (AB1 === 'A') setStopA1(nextStops[0].shortName);
+          else setStopB1(nextStops[0].shortName);
+        }
+      }
+      return nextLine;
+    });
   }
 
   const handleChange = async () => {
     if(oneOrThree === '3'){
-      await setAB3((AB3) => (AB3 === 'A' ? 'B' : 'A'));
+      await setAB3((currentDirection) => {
+        const nextDirection = currentDirection === 'A' ? 'B' : 'A';
+        const nextStops = nextDirection === 'A' ? pysakitA3 : pysakitB3;
+        if (nextStops.length > 0) {
+          setSelectedStop(nextStops[0].name);
+          if (nextDirection === 'A') setStopA3(nextStops[0].shortName);
+          else setStopB3(nextStops[0].shortName);
+        }
+        return nextDirection;
+      });
     }
     else{
-      await setAB1((AB1) => (AB1 === 'A' ? 'B' : 'A'));
+      await setAB1((currentDirection) => {
+        const nextDirection = currentDirection === 'A' ? 'B' : 'A';
+        const nextStops = nextDirection === 'A' ? pysakitA1 : pysakitB1;
+        if (nextStops.length > 0) {
+          setSelectedStop(nextStops[0].name);
+          if (nextDirection === 'A') setStopA1(nextStops[0].shortName);
+          else setStopB1(nextStops[0].shortName);
+        }
+        return nextDirection;
+      });
     }
 
   };
@@ -203,96 +240,116 @@ const App = () => {
     
   }
 
+  const isLineThree = oneOrThree === '3';
+  const stops = isLineThree
+    ? (AB3 === 'A' ? pysakitA3 : pysakitB3)
+    : (AB1 === 'A' ? pysakitA1 : pysakitB1);
+  const destination = isLineThree
+    ? (AB3 === 'A' ? 'Sorin aukio' : 'Hervanta')
+    : (AB1 === 'A' ? 'Santalahti' : 'Tays');
+  const isLoading = stops.length === 0;
 
-  if ((saapuminen.length === 0 && pysakitA3.length === 0 && pysakitB3.length === 0) || (saapuminen=== 0 && pysakitA1.length === 0 && pysakitB1.length === 0) ) {
-    if(tila === 'error'){
-      return <div className='container'>ERROR fetching data, please come back later</div>;
-    }
-    else{
-      return <div className='container'>loading...</div>;
-    }
-    
-  }
+  return (
+    <main className="app-shell">
+      <section className="schedule-card" aria-live="polite">
+        <header className="schedule-header">
+          <div className="brand">
+            <div className="brand-mark" aria-hidden="true">
+              <span>{oneOrThree}</span>
+            </div>
+            <div>
+              <p className="eyebrow">Tampereen ratikka</p>
+              <h1>Linja {oneOrThree}</h1>
+            </div>
+          </div>
+          <div className="line-switch" aria-label="Valitse linja">
+            <button
+              type="button"
+              className={oneOrThree === '1' ? 'line-button active' : 'line-button'}
+              onClick={() => oneOrThree !== '1' && handleLineChange()}
+            >
+              1
+            </button>
+            <button
+              type="button"
+              className={oneOrThree === '3' ? 'line-button active' : 'line-button'}
+              onClick={() => oneOrThree !== '3' && handleLineChange()}
+            >
+              3
+            </button>
+          </div>
+        </header>
 
-  if(oneOrThree === '1'){
-    return (
-      <div className='container'>
-        <div className='buttons'>
-          <button className='button' value={selectedStop} onClick={handleLineChange}><span>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</span></button>
-          <button className='button' value={selectedStop} onClick={handleChange}><span>{AB1 === 'B' ? 'Vaihda Taysiin' : 'Vaihda Santalahteen'}</span></button>
+        <div className="route-panel">
+          <div className="route-copy">
+            <span>Suunta</span>
+            <strong>{destination}</strong>
+          </div>
+          <button type="button" className="direction-button" onClick={handleChange}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 7h11m0 0-3-3m3 3-3 3M17 17H6m0 0 3 3m-3-3 3-3" />
+            </svg>
+            Vaihda suuntaa
+          </button>
         </div>
-        <div className='tiedot'>
-          <h5>Linjan {oneOrThree} aikataulut, suuntaan {AB1 === 'A' ? 'Santalahti' : 'Tays'}</h5>
-        </div>
-        <div className='valinta'>
-        <h3>Valitse pysäkki</h3>
-        <select className='selector' value={selectedStop} onChange={handleStopChange}>
-            {AB1 === 'A' ? (
-              pysakitA1.map((item, index) => (
-                <option key={index} value={item.name}>
-                  {item.name}
-                </option>
-              ))
-            ) : (
-             pysakitB1.map((item, index) => (
-                <option key={index} value={item.name}>
-                  {item.name}
-                </option>
-              ))
-            )}
-          </select>
-        </div>
-        <div className='aikataulut'>
-          <h2>AIKATAULUT</h2>
-          {
-            saapuminen.map((saapuminen,index) => (
 
-                <Aikataulut key={index} ajat={saapuminen}/>
-            ))
-          }
-        </div>
-      </div>
-    );
-  }
-  if(oneOrThree === '3'){
-    return (
-      <div className='container'>
-        <div className='buttons'>
-          <button className='button' value={selectedStop} onClick={handleLineChange}><span>{oneOrThree === '1' ? 'Vaihda 3' : 'Vaihda 1'}</span></button>
-          <button className='button' value={selectedStop} onClick={handleChange}><span>{AB3 === 'B' ? 'Vaihda Hervantaan' : 'Vaihda Sorin aukiolle'}</span></button>
-        </div>
-        <div className='tiedot'>
-          <h5>Linjan {oneOrThree} aikataulut, suuntaan {AB3 === 'A' ? 'Sorin Aukio' : 'Hervanta'}</h5>
-        </div>
-        <div className='valinta'>
-        <h3>Valitse pysäkki</h3>
-        <select className='selector' value={selectedStop} onChange={handleStopChange}>
-            {AB3 === 'A' ? (
-              pysakitA3.map((item, index) => (
-                <option key={index} value={item.name}>
+        <div className="stop-picker">
+          <label htmlFor="stop-select">Pysäkki</label>
+          <div className="select-wrap">
+            <select
+              id="stop-select"
+              className="stop-select"
+              value={selectedStop}
+              onChange={handleStopChange}
+              disabled={isLoading}
+            >
+              {stops.map((item) => (
+                <option key={item.shortName} value={item.name}>
                   {item.name}
                 </option>
-              ))
-            ) : (
-             pysakitB3.map((item, index) => (
-                <option key={index} value={item.name}>
-                  {item.name}
-                </option>
-              ))
-            )}
-          </select>
+              ))}
+            </select>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m7 10 5 5 5-5" />
+            </svg>
+          </div>
         </div>
-        <div className='aikataulut'>
-          <h2>AIKATAULUT</h2>
-          {
-            saapuminen.map((saapuminen,index) => (
-                <Aikataulut key={index} ajat={saapuminen}/>
-            ))
-          }
-        </div>
-      </div>
-    );
-  }
+
+        <section className="departures">
+          <div className="departures-heading">
+            <div>
+              <p className="eyebrow">Seuraavat</p>
+              <h2>Saapumisajat</h2>
+            </div>
+            <span className="live-badge"><i /> Päivitetään 5 min välein</span>
+          </div>
+
+          {tila === 'error' ? (
+            <div className="state-message error-message">
+              <strong>Aikatauluja ei juuri nyt saada</strong>
+              <span>Yritä hetken kuluttua uudelleen.</span>
+            </div>
+          ) : isLoading ? (
+            <div className="state-message">
+              <span className="spinner" />
+              <strong>Ladataan pysäkkejä</strong>
+            </div>
+          ) : saapuminen.length === 0 ? (
+            <div className="state-message">
+              <strong>Ei tulevia vuoroja</strong>
+              <span>Valitse toinen pysäkki tai suunta.</span>
+            </div>
+          ) : (
+            <div className="departure-list">
+              {saapuminen.map((arrival, index) => (
+                <Aikataulut key={`${arrival}-${index}`} ajat={arrival} />
+              ))}
+            </div>
+          )}
+        </section>
+      </section>
+    </main>
+  );
 };
 
 export default App;

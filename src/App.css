@@ -1,182 +1,379 @@
-.App {
-  text-align: center;
+:root {
+  --ink: #17233c;
+  --muted: #6f7b91;
+  --green: #43a047;
+  --green-dark: #2f7d32;
+  --blue: #1f5fa9;
+  --line: #e8edf4;
 }
 
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+.app-shell {
   min-height: 100vh;
+  padding: 32px 20px;
+  display: grid;
+  place-items: start center;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(126, 173, 222, 0.28), transparent 30%),
+    radial-gradient(circle at 85% 85%, rgba(84, 178, 110, 0.18), transparent 28%),
+    linear-gradient(135deg, #eef4fb 0%, #f8fafc 55%, #edf5f0 100%);
+  box-sizing: border-box;
+}
+
+.schedule-card {
+  width: min(680px, 100%);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 24px 70px rgba(45, 74, 112, 0.16);
+}
+
+.schedule-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  justify-content: space-between;
+  padding: 24px 28px 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-mark {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
   color: white;
+  background: linear-gradient(145deg, #55b75a, #2d8438);
+  box-shadow: 0 10px 22px rgba(64, 155, 70, 0.24);
+  font-size: 27px;
+  font-weight: 800;
 }
 
-.App-link {
-  color: #61dafb;
+.eyebrow {
+  margin: 0 0 2px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.brand h1,
+.departures h2 {
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: -0.03em;
 }
 
-.button {
-  display: inline-block;
-  border-radius: 4px;
-  background-color: rgb(41, 136, 41);
-  border: none;
-  color: #FFFFFF;
-  text-align: center;
-  font-size: 16px;
-  padding: 20px;
-  width: 250px;
-  transition: all 0.5s;
+.brand h1 {
+  font-size: 26px;
+}
+
+.line-switch {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #eef2f7;
+}
+
+.line-button {
+  width: 44px;
+  height: 40px;
+  border: 0;
+  border-radius: 10px;
+  color: #7b8799;
+  background: transparent;
+  font-weight: 800;
   cursor: pointer;
-  margin: 5px;
+  transition: 180ms ease;
 }
 
-.button span {
+.line-button.active {
+  color: white;
+  background: var(--green);
+  box-shadow: 0 5px 12px rgba(67, 160, 71, 0.25);
+}
+
+.route-panel {
+  margin: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid #dde8f3;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f4f8fc, #edf4fa);
+}
+
+.route-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.route-copy span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.route-copy strong {
+  margin-top: 2px;
+  color: var(--ink);
+  font-size: 20px;
+}
+
+.direction-button {
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 12px;
+  padding: 0 13px;
+  color: var(--blue);
+  background: white;
+  box-shadow: 0 4px 14px rgba(42, 85, 133, 0.09);
+  font-weight: 800;
   cursor: pointer;
-  display: inline-block;
+}
+
+.direction-button svg,
+.select-wrap svg {
+  width: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stop-picker {
+  margin: 20px 28px 0;
+}
+
+.stop-picker label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.select-wrap {
   position: relative;
-  transition: 0.5s;
 }
 
-.button span:after {
-  content: '\00bb';
-  position: absolute;
-  opacity: 0;
-  top: 0;
-  right: -20px;
-  transition: 0.5s;
-}
-
-.button:hover span {
-  padding-right: 25px;
-}
-
-.button:hover span:after {
-  opacity: 1;
-  right: 0;
-}
-
-.selector {
-
-  text-align: center;
-  background-color: rgb(41, 136, 41);
-  user-select: none;
+.stop-select {
+  width: 100%;
+  height: 52px;
+  appearance: none;
+  border: 1px solid #dce4ef;
+  border-radius: 14px;
+  padding: 0 48px 0 16px;
+  color: var(--ink);
+  background: white;
+  font-size: 16px;
+  font-weight: 700;
   outline: none;
-  border: none;
-  border-radius: 4px;
+  transition: 180ms ease;
 }
 
-#root {
-  background-color: darkblue;
+.stop-select:focus {
+  border-color: #74a1cf;
+  box-shadow: 0 0 0 4px rgba(47, 112, 181, 0.1);
 }
-.container {
+
+.select-wrap svg {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  pointer-events: none;
+  color: #7b8799;
+}
+
+.departures {
+  margin-top: 20px;
+  padding: 22px 28px 28px;
+  border-top: 1px solid var(--line);
+  background: #fbfcfe;
+}
+
+.departures-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.departures h2 {
+  font-size: 21px;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.live-badge i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #62b76a;
+  box-shadow: 0 0 0 4px #e7f4e8;
+}
+
+.departure-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pysakki {
+  min-height: 82px;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  border: 1px solid #e5eaf1;
+  border-radius: 16px;
+  padding: 14px 16px;
+  color: var(--ink);
+  background: white;
+  box-shadow: 0 7px 18px rgba(68, 91, 120, 0.06);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.pysakki::before {
+  content: "Saapuu";
+  align-self: start;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.pysakki::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: start;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+.state-message {
+  min-height: 160px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: lightblue
+  gap: 7px;
+  border: 1px dashed #dce4ef;
+  border-radius: 16px;
+  color: var(--muted);
+  text-align: center;
 }
 
-.valinta {
-  margin-top: 10px;
-  text-align: center;
+.state-message strong {
+  color: var(--ink);
+}
+
+.error-message {
+  border-color: #efbbbb;
+  background: #fff7f7;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
   margin-bottom: 5px;
+  border: 3px solid #dde8f2;
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.aikataulut {
-  text-align: center;
-  background-color: lightblue;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-}
-.pysakki {
-  padding-left: 0;
-  text-align: center;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.suunta {
-  margin: 10px;
+@media (max-width: 620px) {
+  .app-shell {
+    padding: 0;
+    place-items: start stretch;
+  }
 
-}
-.pysakki {
-  margin: 10px;
-  font-size: large;
-  font-weight: bold;
-}
+  .schedule-card {
+    border: 0;
+    border-radius: 0;
+  }
 
-.linja {
-  margin: 10px;
-}
+  .schedule-header {
+    padding: 18px 16px 16px;
+  }
 
-@media screen and (max-width: 800px) {
-  .App {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .brand-mark {
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+  }
+
+  .brand h1 {
+    font-size: 22px;
+  }
+
+  .route-panel,
+  .stop-picker,
+  .departures {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  .route-panel {
+    margin: 0 16px;
+  }
+
+  .direction-button {
+    width: 44px;
+    padding: 0;
     justify-content: center;
-    align-items: center;
-  }
-  .App-header {
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-  }
-  .App-logo {
-    height: 20vmin;
-  }
-  .App-link {
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-  .button {
-    width: 200px;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    text-wrap: nowrap;
-    
+    font-size: 0;
   }
 
-  .selector {
-    width: 200px;
+  .direction-button svg {
+    width: 22px;
   }
-  .valinta {
-    margin-top: 0px;
+
+  .departures {
+    margin: 20px 0 0;
+    padding: 20px 16px;
   }
-  .aikataulut {
-    width: 100%;
+
+  .live-badge {
+    max-width: 125px;
+    line-height: 1.3;
   }
-  .pysakki {
-    margin: 0px;
+
+  .departure-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .suunta {
-    margin: 0px;
-  }
-  .linja {
-    margin: 0px;
-  }
-  
 }
