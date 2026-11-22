@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Aikatauluservice from './services/aikataulut';
 import Aikataulut from './components/Aikataulut';
 import './App.css';
@@ -67,19 +67,7 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-
-    getAikataulut();
-    const intervalId = setInterval(() => {
-
-      getAikataulut();
-      setTila('');
-    }, 5 * 60 * 1000); // 5 minutes in milliseconds
-
-    return () => clearInterval(intervalId);
-  }, [AB3,pysakitA3, pysakitB3, stopA3, stopB3, oneOrThree, AB1, pysakitA1, pysakitB1, stopA1, stopB1]);
-
-  const getAikataulut = async () => {
+  const getAikataulut = useCallback(async () => {
     setSaapuminen([]);
 
     try{
@@ -165,7 +153,18 @@ const App = () => {
   }catch(error){
     console.error('Error fetching aikataulut', error);
   };
-}
+  }, [AB1, AB3, oneOrThree, stopA1, stopA3, stopB1, stopB3]);
+
+  useEffect(() => {
+    getAikataulut();
+    const intervalId = setInterval(() => {
+      getAikataulut();
+      setTila('');
+    }, 5 * 60 * 1000); // 5 minutes in milliseconds
+
+    return () => clearInterval(intervalId);
+  }, [getAikataulut]);
+
   const handleLineChange = async () => {
     await setOneOrThree((currentLine) => {
       const nextLine = currentLine === '1' ? '3' : '1';
