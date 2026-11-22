@@ -33,6 +33,7 @@ jobs:
           npm install -g terser
           while IFS= read -r file; do
             terser "$file" --compress "pure_funcs=['console.log','console.info','console.debug']" -o "${file}.tmp"
+            mv "${file}.tmp" "$file"
           done < <(find build -name "*.js" -type f)
 
       - name: Varmista ettei lokikutsuja jäänyt
