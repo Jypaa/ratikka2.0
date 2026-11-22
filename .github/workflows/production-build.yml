@@ -1,4 +1,4 @@
-name: React Production Build (No Logs)
+name: Build, Strip Logs & Push to Deploy Branch
 
 on:
   push:
@@ -7,8 +7,10 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Hae koodi
@@ -26,20 +28,32 @@ jobs:
       - name: Rakenna React-tuotantobuildi ilman source mapeja
         env:
           GENERATE_SOURCEMAP: false
-        run: npm run build:prod
+        run: npm run build
 
       - name: Poista kaikki console-kutsut tuotantobundlesta
         run: |
           npm install -g terser
           while IFS= read -r file; do
-            terser "$file" --compress "pure_funcs=['console.log','console.info','console.debug']" -o "${file}.tmp"
+            terser "$file" --compress drop_console=true -o "${file}.tmp"
             mv "${file}.tmp" "$file"
           done < <(find build -name "*.js" -type f)
 
       - name: Varmista ettei lokikutsuja jäänyt
         run: |
-          if grep -rnE "console\.(log|debug|info)\(" build/; then
+          if grep -rnE "console\.(log|debug|info|warn|error)\(" build/; then
             echo "VIRHE: Tuotantobundlesta löytyi console-kutsuja!"
             exit 1
           fi
           echo "OK: Kaikki lokikutsut on poistettu."
+
+      - name: Puske valmis build deploy-haaraan
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          cd build
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b deploy
+          git add -A
+          git commit -m "Deploy build from ${{ github.sha }}"
+          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" deploy
