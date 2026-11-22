@@ -26,7 +26,7 @@ jobs:
       - name: Rakenna React-tuotantobuildi ilman source mapeja
         env:
           GENERATE_SOURCEMAP: false
-        run: npm run build
+        run: npm run build:prod
 
       - name: Poista kaikki console-kutsut tuotantobundlesta
         run: |
