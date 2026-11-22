@@ -1,0 +1,39 @@
+name: Production Build & Verify No Logs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Hae koodi
+        uses: actions/checkout@v4
+
+      - name: Asenna Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Asenna riippuvuudet
+        run: npm ci
+
+      - name: Rakenna tuotantobuildi ilman lokeja ja source mapeja
+        env:
+          NODE_ENV: production
+          GENERATE_SOURCEMAP: false
+        run: npm run build
+
+      - name: Varmista ettei bundle sisällä console.log-kutsuja
+        run: |
+          BUILD_DIR="build" # Vaihda muotoon "dist" jos käytät Viteä
+          if grep -rnE "console\.(log|debug|info)\(" "$BUILD_DIR"; then
+            echo "VIRHE: Tuotantobundlesta löytyi lokikutsuja!"
+            exit 1
+          fi
+          echo "OK: Lokikutsuja ei löytynyt tuotantobundlesta."

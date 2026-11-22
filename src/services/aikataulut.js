@@ -1,11 +1,10 @@
 import axios from 'axios'
-import { logger } from '../utils/logger'
 
 const date = new Date();
 const days = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday",];
 let day = date.getDay()
 
-const apiBase = process.env.REACT_APP_API_BASE || '/journeys'
+const apiBase = 'https://data.itsfactory.fi/journeys'
 const urlStopNames3 = `${apiBase}/api/1/journey-patterns?lineId=3`
 const urlStopNames1 = `${apiBase}/api/1/journey-patterns?lineId=1`
 
@@ -31,7 +30,7 @@ const getStop = (stopId, oneOrThree) =>{
 
     if(oneOrThree === '3'){  
         const request = axios.get(`${apiBase}/api/1/journeys?stopPointId=${stopname}&dayTypes=${days[day]}&lineId=3`)
-        logger.log('request',stopname, days[day])
+        console.log('request',stopname, days[day])
         return request.then(response =>response.data)
         }
          

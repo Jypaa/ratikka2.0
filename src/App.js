@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import Aikatauluservice from './services/aikataulut';
 import Aikataulut from './components/Aikataulut';
-import { logger } from './utils/logger';
 import './App.css';
 
 const App = () => {
@@ -59,12 +58,12 @@ const App = () => {
       setPysakitA1(saapuvatA1.map((item, index) => ({ name: item.name, shortName: item.shortName, index })));
       setStopA1(saapuvatA1[0].shortName);
   
-      logger.log('responseB3', responseB3);
-      logger.log('responseA3', responseA3);
-      logger.log('responseB1', responseB1);
-      logger.log('responseA1', responseA1);
+      console.log('responseB3', responseB3);
+      console.log('responseA3', responseA3);
+      console.log('responseB1', responseB1);
+      console.log('responseA1', responseA1);
     } catch (error) {
-      logger.error('Error fetching pysakit', error);
+      console.error('Error fetching pysakit', error);
     }
   };
 
@@ -85,7 +84,7 @@ const App = () => {
 
     try{
     if(oneOrThree === '3'){
-      logger.log('AB3', AB3)
+      console.log('AB3', AB3)
       if (AB3 === 'A') {
         const responseStop = await Aikatauluservice.getStop(stopA3, oneOrThree);
         if(responseStop.status === "error"){
@@ -104,9 +103,9 @@ const App = () => {
         }
       }
       if (AB3 === 'B') {
-        logger.log('stopB3', stopB3)
+        console.log('stopB3', stopB3)
         const responseStop = await Aikatauluservice.getStop(stopB3, oneOrThree);
-        logger.log('responseStop',responseStop)
+        console.log('responseStop',responseStop)
         if(responseStop.status === "error"){
           return(
             setTila('error')
@@ -125,7 +124,7 @@ const App = () => {
 
 
     if(oneOrThree === '1'){
-      logger.log('AB1', AB1)
+      console.log('AB1', AB1)
       if (AB1 === 'A') {
         const responseStop = await Aikatauluservice.getStop(stopA1, oneOrThree);
         if(responseStop.status === "error"){
@@ -164,7 +163,7 @@ const App = () => {
 
 
   }catch(error){
-    logger.error('Error fetching aikataulut', error);
+    console.error('Error fetching aikataulut', error);
   };
 }
   const handleLineChange = async () => {

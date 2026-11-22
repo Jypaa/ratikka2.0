@@ -17,12 +17,12 @@
   },
   "scripts": {
     "dev": "react-scripts start",
-    "start": "serve -s build",
+    "start": "craco start",
     "start:dev": "serve -s build-dev",
-    "build": "REACT_APP_APP_ENV=production react-scripts build",
-    "build:dev": "REACT_APP_APP_ENV=development BUILD_PATH=build-dev react-scripts build",
-    "build:prod": "REACT_APP_APP_ENV=production react-scripts build",
-    "test": "react-scripts test",
+    "build": "craco build",
+    "build:dev": "BUILD_PATH=build-dev react-scripts build",
+    "build:prod": "react-scripts build",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -43,5 +43,9 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://data.itsfactory.fi"
+  "proxy": "https://data.itsfactory.fi",
+  "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "babel-plugin-transform-remove-console": "^6.9.4"
+  }
 }
